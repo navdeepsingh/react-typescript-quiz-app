@@ -4,8 +4,10 @@ import { fetchQuizQuestions } from './API'
 import QuestionCard from './components/QuestionCard'
 // Types
 import { QuestionState, Difficulty } from './API'
+// Styles
+import styles from './App.module.scss'
 
-type AnswerObject = {
+export type AnswerObject = {
   question: string
   answer: string
   correct: boolean
@@ -46,6 +48,7 @@ function App() {
       const answer = e.currentTarget.value
       // Check answer against correct answer
       const correct = questions[number].correct_answer === answer
+      e.currentTarget.classList.add(correct ? 'correct' : 'incorrect')
       // Add score if answer is correct
       if (correct) setScore(prev => prev + 1)
       // Save answer in the array for user answers
@@ -55,6 +58,7 @@ function App() {
         correct,
         correctAnswer: questions[number].correct_answer,
       }
+
       setUserAnswers(prev => [...prev, answerObject])
     }
   }
@@ -72,38 +76,40 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <h1>REACT + TS QUIZ</h1>
+    <>
+      <div className={styles.App}>
+        <h1>REACT + TS QUIZ</h1>
 
-      {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
-        <button className="start" onClick={startTrivia}>
-          START
-        </button>
-      ) : null}
+        {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
+          <button className={styles.start} onClick={startTrivia}>
+            START
+          </button>
+        ) : null}
 
-      {!gameOver ? <p className="score">Score: {score}</p> : null}
+        {!gameOver ? <p className="score">Score: {score}</p> : null}
 
-      {loading && <p>Loading Questions...</p>}
+        {loading && <p>Loading Questions...</p>}
 
-      {!loading && !gameOver && (
-        <QuestionCard
-          questionNumber={number + 1}
-          totalQuestions={TOTAL_QUESTIONS}
-          question={questions[number].question}
-          answers={questions[number].answers}
-          userAnswer={userAnswers ? userAnswers[number] : null}
-          callback={checkAnswer}
-        />
-      )}
+        {!loading && !gameOver && (
+          <QuestionCard
+            questionNumber={number + 1}
+            totalQuestions={TOTAL_QUESTIONS}
+            question={questions[number].question}
+            answers={questions[number].answers}
+            userAnswer={userAnswers ? userAnswers[number] : undefined}
+            callback={checkAnswer}
+          />
+        )}
 
-      {!gameOver &&
-      userAnswers.length === number + 1 &&
-      number !== TOTAL_QUESTIONS - 1 ? (
-        <button className="start" onClick={nextQuestion}>
-          NEXT QUESTION
-        </button>
-      ) : null}
-    </div>
+        {!gameOver &&
+        userAnswers.length === number + 1 &&
+        number !== TOTAL_QUESTIONS - 1 ? (
+          <button className={styles.next} onClick={nextQuestion}>
+            NEXT QUESTION
+          </button>
+        ) : null}
+      </div>
+    </>
   )
 }
 
