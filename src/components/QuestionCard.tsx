@@ -1,4 +1,5 @@
 import * as React from 'react'
+import classNames from 'classnames'
 // Types
 import { AnswerObject } from '../App'
 // Styles
@@ -27,18 +28,24 @@ const QuestionCard: React.FC<QuestionProps> = ({
       </p>
       <p dangerouslySetInnerHTML={{ __html: question }} />
       <div>
-        {answers.map(answer => (
-          <div key={answer}>
-            <button
-              disabled={userAnswer ? true : false}
-              value={answer}
-              onClick={callback}
-              className={styles.QuestionButton}
-            >
-              <span dangerouslySetInnerHTML={{ __html: answer }} />
-            </button>
-          </div>
-        ))}
+        {answers.map(answer => {
+          var btnGroupClasses = classNames(styles.QuestionButton, {
+            [styles.correct]: userAnswer?.correctAnswer === answer,
+            [styles.incorrect]: userAnswer?.answer === answer,
+          })
+          return (
+            <div key={answer}>
+              <button
+                disabled={userAnswer ? true : false}
+                value={answer}
+                onClick={callback}
+                className={btnGroupClasses}
+              >
+                <span dangerouslySetInnerHTML={{ __html: answer }} />
+              </button>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

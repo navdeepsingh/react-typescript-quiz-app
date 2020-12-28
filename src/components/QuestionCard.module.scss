@@ -10,10 +10,6 @@
   p {
     font-size: 1rem;
   }
-
-  .incorrect {
-    background: linear-gradient(90deg, #ff5656, #c16868);
-  }
 }
 
 .QuestionButton {
@@ -30,11 +26,15 @@
   color: #fff;
   text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.25);
 
-  // &.correct {
-  //   background: linear-gradient(90deg, #56ffa4, #59bc86);
-  // }
-
   &:hover {
     opacity: 0.8;
   }
+}
+
+.incorrect {
+  background: linear-gradient(90deg, #ff5656, #c16868);
+}
+
+.correct {
+  background: linear-gradient(90deg, #56ffa4, #59bc86);
 }
