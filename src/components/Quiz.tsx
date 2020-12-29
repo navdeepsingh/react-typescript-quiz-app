@@ -1,4 +1,5 @@
 import * as React from 'react'
+
 import { fetchQuizQuestions } from '../API'
 // Components
 import QuestionCard from '../components/QuestionCard'
@@ -21,9 +22,12 @@ type IStateProps = {
   gameOver: boolean
   questions: QuestionState[]
   userAnswers: AnswerObject[]
+  error: string | null
 }
 
 const TOTAL_QUESTIONS = 10
+
+
 
 export const Quiz = () => {
   const [state, setState] = React.useState<IStateProps>({
@@ -33,11 +37,15 @@ export const Quiz = () => {
     gameOver: true,
     questions: [],
     userAnswers: [],
+    error: null,
   })
 
+  const { error } = state
   React.useEffect(() => {
-    console.log('Re-rendered')
-  })
+    if (error) {
+      throw new Error(error)
+    }
+  }, [error])
 
   const startTrivia = async () => {
     setState({ ...state, loading: true })
@@ -46,6 +54,10 @@ export const Quiz = () => {
       TOTAL_QUESTIONS,
       Difficulty.EASY,
     )
+
+    if (!newQuestions.length) {
+      setState({ ...state, error: 'I am error' })
+    }
 
     setState({
       ...state,
@@ -107,18 +119,20 @@ export const Quiz = () => {
 
       {state.loading && <p>Loading Questions...</p>}
 
-      {!state.loading && !state.gameOver && (
-        <QuestionCard
-          questionNumber={state.number + 1}
-          totalQuestions={TOTAL_QUESTIONS}
-          question={state.questions[state.number].question}
-          answers={state.questions[state.number].answers}
-          userAnswer={
-            state.userAnswers ? state.userAnswers[state.number] : undefined
-          }
-          callback={checkAnswer}
-        />
-      )}
+      
+        {!state.loading && !state.gameOver && (
+          <QuestionCard
+            questionNumber={state.number + 1}
+            totalQuestions={TOTAL_QUESTIONS}
+            question={state.questions[state.number].question}
+            answers={state.questions[state.number].answers}
+            userAnswer={
+              state.userAnswers ? state.userAnswers[state.number] : undefined
+            }
+            callback={checkAnswer}
+          />
+        )}
+      
 
       {!state.gameOver &&
       state.userAnswers.length === state.number + 1 &&
