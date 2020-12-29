@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
 import { fetchQuizQuestions } from '../API'
 // Components
 import QuestionCard from '../components/QuestionCard'
@@ -25,6 +26,14 @@ type IStateProps = {
 
 const TOTAL_QUESTIONS = 10
 
+const ErrorFallback = () => {
+  return (
+    <div role="alert">
+      There was an error: <pre style={{ whiteSpace: 'normal' }}>Error</pre>
+    </div>
+  )
+}
+
 export const Quiz = () => {
   const [state, setState] = React.useState<IStateProps>({
     loading: false,
@@ -33,10 +42,6 @@ export const Quiz = () => {
     gameOver: true,
     questions: [],
     userAnswers: [],
-  })
-
-  React.useEffect(() => {
-    console.log('Re-rendered')
   })
 
   const startTrivia = async () => {
@@ -107,18 +112,20 @@ export const Quiz = () => {
 
       {state.loading && <p>Loading Questions...</p>}
 
-      {!state.loading && !state.gameOver && (
-        <QuestionCard
-          questionNumber={state.number + 1}
-          totalQuestions={TOTAL_QUESTIONS}
-          question={state.questions[state.number].question}
-          answers={state.questions[state.number].answers}
-          userAnswer={
-            state.userAnswers ? state.userAnswers[state.number] : undefined
-          }
-          callback={checkAnswer}
-        />
-      )}
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        {!state.loading && !state.gameOver && (
+          <QuestionCard
+            questionNumber={state.number + 1}
+            totalQuestions={TOTAL_QUESTIONS}
+            question={state.questions[state.number].question}
+            answers={state.questions[state.number].answers}
+            userAnswer={
+              state.userAnswers ? state.userAnswers[state.number] : undefined
+            }
+            callback={checkAnswer}
+          />
+        )}
+      </ErrorBoundary>
 
       {!state.gameOver &&
       state.userAnswers.length === state.number + 1 &&
