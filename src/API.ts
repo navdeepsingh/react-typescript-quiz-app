@@ -21,23 +21,15 @@ export const fetchQuizQuestions = async (
   amount: number,
   difficulty: Difficulty,
 ) => {
-  const endpoint = `https://opentdb.com/api.php?amounts=${amount}&difficulty=${difficulty}&type=multiple`
+  const endpoint = `https://opentdb.com/api.php?amount=${amount}&difficulty=${difficulty}&type=multiple`
 
-  try {
-    const data = await (await fetch(endpoint)).json()
+  const data = await (await fetch(endpoint)).json()
 
-    if (data.results.length) {
-      return data.results.map((question: Question) => ({
-        ...question,
-        answers: shuffleArray([
-          ...question.incorrect_answers,
-          question.correct_answer,
-        ]),
-      }))
-    } else {
-      throw new Error(`No questions found`)
-    }
-  } catch (error) {
-    throw new Error(error)
-  }
+  return data.results.map((question: Question) => ({
+    ...question,
+    answers: shuffleArray([
+      ...question.incorrect_answers,
+      question.correct_answer,
+    ]),
+  }))
 }

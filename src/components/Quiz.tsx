@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
+
 import { fetchQuizQuestions } from '../API'
 // Components
 import QuestionCard from '../components/QuestionCard'
@@ -22,17 +22,12 @@ type IStateProps = {
   gameOver: boolean
   questions: QuestionState[]
   userAnswers: AnswerObject[]
+  error: string | null
 }
 
 const TOTAL_QUESTIONS = 10
 
-const ErrorFallback = () => {
-  return (
-    <div role="alert">
-      There was an error: <pre style={{ whiteSpace: 'normal' }}>Error</pre>
-    </div>
-  )
-}
+
 
 export const Quiz = () => {
   const [state, setState] = React.useState<IStateProps>({
@@ -42,7 +37,15 @@ export const Quiz = () => {
     gameOver: true,
     questions: [],
     userAnswers: [],
+    error: null,
   })
+
+  const { error } = state
+  React.useEffect(() => {
+    if (error) {
+      throw new Error(error)
+    }
+  }, [error])
 
   const startTrivia = async () => {
     setState({ ...state, loading: true })
@@ -51,6 +54,10 @@ export const Quiz = () => {
       TOTAL_QUESTIONS,
       Difficulty.EASY,
     )
+
+    if (!newQuestions.length) {
+      setState({ ...state, error: 'I am error' })
+    }
 
     setState({
       ...state,
@@ -112,7 +119,7 @@ export const Quiz = () => {
 
       {state.loading && <p>Loading Questions...</p>}
 
-      <ErrorBoundary FallbackComponent={ErrorFallback}>
+      
         {!state.loading && !state.gameOver && (
           <QuestionCard
             questionNumber={state.number + 1}
@@ -125,7 +132,7 @@ export const Quiz = () => {
             callback={checkAnswer}
           />
         )}
-      </ErrorBoundary>
+      
 
       {!state.gameOver &&
       state.userAnswers.length === state.number + 1 &&
