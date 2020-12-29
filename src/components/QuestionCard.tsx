@@ -1,7 +1,7 @@
 import * as React from 'react'
 import classNames from 'classnames'
 // Types
-import { AnswerObject } from '../App'
+import { AnswerObject } from './Quiz'
 // Styles
 import styles from './QuestionCard.module.scss'
 
